@@ -30,6 +30,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bestsound.dsp.ui.DspOtgBridge;
+import com.bestsound.dsp.usb.UsbOtgController;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -47,6 +50,7 @@ public class MainActivity extends Activity implements UsbDspManager.DspCallback,
     private UsbDspManager usbDspManager;
     private BluetoothDspManager bluetoothDspManager;
     private NativeKaraokeEngine nativeKaraokeEngine;
+    private UsbOtgController otgController;
 
     // Dual-Tab Views
     private Button btnTabQuick;
@@ -85,6 +89,8 @@ public class MainActivity extends Activity implements UsbDspManager.DspCallback,
 
         bluetoothDspManager = new BluetoothDspManager(this);
         bluetoothDspManager.setCallback(this);
+
+        otgController = new UsbOtgController(this);
 
         nativeKaraokeEngine = KaraokeForegroundService.getEngine(this);
         nativeKaraokeEngine.setMeterCallback((db, latencyMs) -> runOnUiThread(() -> {
@@ -176,10 +182,11 @@ public class MainActivity extends Activity implements UsbDspManager.DspCallback,
         });
 
         webViewStudio.addJavascriptInterface(new AndroidDspBridge(), "AndroidDsp");
+        webViewStudio.addJavascriptInterface(new DspOtgBridge(this, webViewStudio, otgController), "OtgDsp");
         if (getPackageName().contains("karaoke")) {
             webViewStudio.loadUrl("file:///android_asset/karaoke/index.html");
         } else {
-            webViewStudio.loadUrl("file:///android_asset/studio/index.html");
+            webViewStudio.loadUrl("file:///android_asset/otg/index.html");
         }
     }
 
@@ -761,6 +768,7 @@ public class MainActivity extends Activity implements UsbDspManager.DspCallback,
     protected void onDestroy() {
         super.onDestroy();
         // Keep KaraokeForegroundService running in background when activity is closed or screen is off
+        if (otgController != null) otgController.destroy();
         usbDspManager.destroy();
         bluetoothDspManager.destroy();
     }

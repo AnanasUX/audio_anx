@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>An Sound DSP — USB OTG 3-Way</title>
+  <style>
+    :root {
+      --bg: #080b10;
+      --card: rgba(20, 26, 36, 0.85);
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f1f5f9;
+      --muted: #8b9bb0;
+      --cyan: #00e5ff;
+      --gold: #ffb300;
+      --green: #00e676;
+      --red: #ff3b5c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: radial-gradient(circle at 20% 0%, rgba(0, 229, 255, 0.12), transparent 45%), var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      padding: max(12px, env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
+    }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 14px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; margin-bottom: 12px;
+    }
+    .brand h1 { font-size: 15px; font-weight: 800; color: #fff; }
+    .brand small { font-size: 10.5px; color: var(--cyan); font-family: monospace; }
+    .pill {
+      padding: 5px 10px; border-radius: 99px; font: 700 10px monospace;
+      background: rgba(255, 59, 92, 0.12); border: 1px solid rgba(255, 59, 92, 0.4); color: #ff8a99;
+    }
+    .pill.connected {
+      background: rgba(0, 230, 118, 0.12); border-color: var(--green); color: var(--green);
+    }
+    .card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px; margin-bottom: 12px;
+    }
+    .card-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+    }
+    .card-head h2 { font-size: 13.5px; font-weight: 700; }
+    .badge {
+      font: 700 10px monospace; padding: 3px 8px; border-radius: 6px;
+      background: rgba(0, 229, 255, 0.1); color: var(--cyan); border: 1px solid rgba(0, 229, 255, 0.25);
+    }
+    .notice {
+      font-size: 11px; color: #ffd580; background: rgba(255, 179, 0, 0.08);
+      border: 1px solid rgba(255, 179, 0, 0.25); border-radius: 10px;
+      padding: 9px 11px; margin-bottom: 10px; line-height: 1.4;
+    }
+    .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn {
+      padding: 11px 12px; border-radius: 11px; border: 1px solid var(--border);
+      background: #141b26; color: #fff; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .btn.primary { background: linear-gradient(135deg, #00e5ff, #0088ff); color: #04101a; border: none; }
+    .btn.active { background: rgba(255, 179, 0, 0.18); border-color: var(--gold); color: #ffecb3; }
+    .meta-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 10px 0;
+      font-family: monospace; font-size: 10.5px;
+    }
+    .meta-box { background: #0c1017; border: 1px solid var(--border); border-radius: 8px; padding: 7px; }
+    .meta-box span { display: block; font-size: 9px; color: var(--muted); }
+    .meta-box strong { color: #fff; }
+    .slider-block { margin-bottom: 12px; }
+    .slider-block:last-child { margin-bottom: 0; }
+    .slider-meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+    .slider-meta strong { font-family: monospace; color: var(--cyan); }
+    input[type="range"] {
+      width: 100%; height: 7px; border-radius: 99px; background: #1c2533;
+      outline: none; -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+      background: #fff; border: 3px solid var(--cyan); cursor: pointer;
+    }
+    .warn-text {
+      display: none; font-size: 11px; color: #ff8a99; background: rgba(255, 59, 92, 0.12);
+      border: 1px solid rgba(255, 59, 92, 0.35); border-radius: 8px; padding: 7px 9px; margin-top: 6px;
+    }
+    .switch-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12.5px;
+    }
+    .switch-row:last-child { border-bottom: none; }
+    .log-box {
+      background: #06080c; border: 1px solid var(--border); border-radius: 10px;
+      padding: 8px 10px; height: 96px; overflow-y: auto;
+      font: 10.5px/1.45 monospace; color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <h1>AN SOUND DSP · USB OTG</h1>
+      <small>MVSilicon FW 0.3.4 · 3-Way 70Wx2</small>
+    </div>
+    <span class="pill" id="otgPill">OTG: CHƯA NỐI</span>
+  </header>
+
+  <!-- USB OTG STATUS -->
+  <section class="card">
+    <div class="card-head">
+      <h2>🔌 Kết Nối USB OTG (Type-C)</h2>
+      <span class="badge" id="txtMode">NONE</span>
+    </div>
+    <div class="notice">
+      ⚡ <strong>Lưu ý phần cứng:</strong> Cổng Type-C trên mạch đã bỏ chân 5V (không lấy nguồn từ điện thoại). Hãy <strong>bật nguồn pin loa trước</strong> rồi mới cắm cáp Type-C → Type-C!
+    </div>
+    <div class="meta-grid">
+      <div class="meta-box"><span>THIẾT BỊ</span><strong id="txtDevName">--</strong></div>
+      <div class="meta-box"><span>VID</span><strong id="txtVid">--</strong></div>
+      <div class="meta-box"><span>PID</span><strong id="txtPid">--</strong></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" id="btnOtgConnect">Quét &amp; Kết Nối OTG</button>
+      <button class="btn" id="btnOtgDisconnect">Ngắt Kết Nối</button>
+    </div>
+  </section>
+
+  <!-- PRESETS -->
+  <section class="card">
+    <div class="card-head">
+      <h2>✨ Cấu Hình 3-Way Mặc Định</h2>
+      <span class="badge">FW 0.3.4</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn active" id="btnPresetSpec">3-Way Spec Matched</button>
+      <button class="btn" id="btnPresetFactory">Factory (DynamicEQ)</button>
+    </div>
+    <p style="font-size:10.5px;color:var(--muted);margin-top:8px;">
+      Sub 5" JBL Boombox 4 (5L) · Mid Pioneer 6Ω · Treble Ford 4Ω 5W (tụ 3µF, HPF 8.8kHz)
+    </p>
+  </section>
+
+  <!-- QUICK TONE 0x91 -->
+  <section class="card">
+    <div class="card-head">
+      <h2>🎛️ Music Tone 3-Band (0x91)</h2>
+      <span class="badge">-6dB .. +6dB</span>
+    </div>
+    <div class="slider-block">
+      <div class="slider-meta"><span>Bass (65 Hz)</span><strong id="valBass">0.0 dB</strong></div>
+      <input type="range" id="slBass" min="-6" max="6" step="0.5" value="0">
+    </div>
+    <div class="slider-block">
+      <div class="slider-meta"><span>Mid (800 Hz)</span><strong id="valMid">0.0 dB</strong></div>
+      <input type="range" id="slMid" min="-6" max="6" step="0.5" value="0">
+    </div>
+    <div class="slider-block">
+      <div class="slider-meta"><span>Treble (8.5 kHz)</span><strong id="valTreble">0.0 dB</strong></div>
+      <input type="range" id="slTreble" min="-6" max="6" step="0.5" value="0">
+    </div>
+  </section>
+
+  <!-- GAIN & SAFETY (0x98 / 0x99 / 0x9A / DRC) -->
+  <section class="card">
+    <div class="card-head">
+      <h2>🛡️ Gain Kênh &amp; Bảo Vệ Loa</h2>
+      <span class="badge">0x98 / 0x99 / 0x9A</span>
+    </div>
+    <div class="slider-block">
+      <div class="slider-meta"><span>Mid Gain (0x99 · Pioneer 6Ω)</span><strong id="valMidGain">4600</strong></div>
+      <input type="range" id="slMidGain" min="2000" max="8000" step="50" value="4600">
+    </div>
+    <div class="slider-block">
+      <div class="slider-meta"><span>Treble Gain (0x98 · Ford 5W)</span><strong id="valTrebleGain">4350</strong></div>
+      <input type="range" id="slTrebleGain" min="2000" max="7000" step="50" value="4350">
+      <div class="warn-text" id="trebleWarn">⚠️ Cảnh báo: Gain > 4600 có thể vượt công suất an toàn cho Treble Ford 5W (4Ω)!</div>
+    </div>
+
+    <label class="switch-row">
+      <span>Đảo Pha Sub Bass 180° (0x9A)</span>
+      <input type="checkbox" id="chkPhase180" style="width:20px;height:20px;">
+    </label>
+    <label class="switch-row">
+      <span>Bật DRC / Limiter Chống Phè (-2.5 dBFS · 0x93/9B/9C)</span>
+      <input type="checkbox" id="chkDrc" checked style="width:20px;height:20px;">
+    </label>
+  </section>
+
+  <!-- EXPORT & LOG -->
+  <section class="card">
+    <div class="card-head">
+      <h2>💾 Export &amp; Log Gói Tin (0xA5 0x5A ... 0x16)</h2>
+    </div>
+    <div class="btn-row" style="margin-bottom:10px;">
+      <button class="btn" id="btnExpIni">Export .INI (V2.44.2)</button>
+      <button class="btn" id="btnExpC">Export .C (Byte Array)</button>
+    </div>
+    <div class="log-box" id="logBox">[READY] Chờ kết nối USB OTG hoặc chỉnh thông số...</div>
+  </section>
+
+  <script>
+    const logBox = document.getElementById('logBox');
+    function addLog(tag, msg) {
+      const line = document.createElement('div');
+      line.textContent = `[${tag}] ${msg}`;
+      logBox.prepend(line);
+      while (logBox.children.length > 30) logBox.removeChild(logBox.lastChild);
+    }
+
+    window.onOtgStatus = function(connected, name, vid, pid, mode) {
+      const pill = document.getElementById('otgPill');
+      pill.textContent = connected ? 'OTG: ĐÃ NỐI' : 'OTG: CHƯA NỐI';
+      pill.classList.toggle('connected', connected);
+      document.getElementById('txtDevName').textContent = name;
+      document.getElementById('txtVid').textContent = vid;
+      document.getElementById('txtPid').textContent = pid;
+      document.getElementById('txtMode').textContent = mode;
+      addLog('USB', connected ? `Connected ${name} (${vid}:${pid}) via ${mode}` : 'Disconnected');
+    };
+
+    window.onOtgLog = function(dir, hex) {
+      addLog(dir, hex);
+    };
+
+    document.getElementById('btnOtgConnect').onclick = () => window.OtgDsp?.connectUsbOtg();
+    document.getElementById('btnOtgDisconnect').onclick = () => window.OtgDsp?.disconnectUsbOtg();
+
+    const sendTone = () => {
+      const b = parseFloat(document.getElementById('slBass').value);
+      const m = parseFloat(document.getElementById('slMid').value);
+      const t = parseFloat(document.getElementById('slTreble').value);
+      document.getElementById('valBass').textContent = (b > 0 ? '+' : '') + b.toFixed(1) + ' dB';
+      document.getElementById('valMid').textContent = (m > 0 ? '+' : '') + m.toFixed(1) + ' dB';
+      document.getElementById('valTreble').textContent = (t > 0 ? '+' : '') + t.toFixed(1) + ' dB';
+      window.OtgDsp?.setMusicTone(b, m, t);
+    };
+    ['slBass', 'slMid', 'slTreble'].forEach(id => document.getElementById(id).oninput = sendTone);
+
+    document.getElementById('slMidGain').oninput = function() {
+      const v = parseInt(this.value, 10);
+      document.getElementById('valMidGain').textContent = v;
+      window.OtgDsp?.setMidGain(v);
+    };
+
+    document.getElementById('slTrebleGain').oninput = function() {
+      const v = parseInt(this.value, 10);
+      document.getElementById('valTrebleGain').textContent = v;
+      document.getElementById('trebleWarn').style.display = v > 4600 ? 'block' : 'none';
+      window.OtgDsp?.setTrebleGain(v);
+    };
+
+    document.getElementById('chkPhase180').onchange = function() {
+      window.OtgDsp?.setBassPhase(this.checked);
+    };
+    document.getElementById('chkDrc').onchange = function() {
+      window.OtgDsp?.setDrcEnabled(this.checked);
+    };
+
+    function applyPresetUi(key) {
+      document.getElementById('btnPresetSpec').classList.toggle('active', key === 'spec');
+      document.getElementById('btnPresetFactory').classList.toggle('active', key === 'factory');
+      if (!window.OtgDsp) return;
+      const res = JSON.parse(window.OtgDsp.applyPreset(key));
+      document.getElementById('slBass').value = res.bass;
+      document.getElementById('slMid').value = res.mid;
+      document.getElementById('slTreble').value = res.treble;
+      document.getElementById('slMidGain').value = res.midGain;
+      document.getElementById('valMidGain').textContent = res.midGain;
+      document.getElementById('slTrebleGain').value = res.trebleGain;
+      document.getElementById('valTrebleGain').textContent = res.trebleGain;
+      document.getElementById('trebleWarn').style.display = res.trebleGain > 4600 ? 'block' : 'none';
+      document.getElementById('chkPhase180').checked = res.phase180;
+      document.getElementById('chkDrc').checked = res.drc;
+      sendTone();
+      addLog('PRESET', `Applied ${res.name}`);
+    }
+    document.getElementById('btnPresetSpec').onclick = () => applyPresetUi('spec');
+    document.getElementById('btnPresetFactory').onclick = () => applyPresetUi('factory');
+
+    document.getElementById('btnExpIni').onclick = () => {
+      const path = window.OtgDsp?.exportConfig('ini') || 'N/A';
+      addLog('EXPORT', 'INI -> ' + path);
+    };
+    document.getElementById('btnExpC').onclick = () => {
+      const path = window.OtgDsp?.exportConfig('c') || 'N/A';
+      addLog('EXPORT', 'C -> ' + path);
+    };
+  </script>
+</body>
+</html>

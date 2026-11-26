@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>An Sound ACP Pro PC — MVSilicon BP1048B2</title>
+<style>
+  :root {
+    --bg-root: #0e1015;
+    --bg-sidebar: #14161c;
+    --bg-topbar: #12141a;
+    --bg-card: #181a21;
+    --bg-card-2: #1e212a;
+    --bg-input: #12141a;
+    --border: #262934;
+    --border-soft: rgba(255,255,255,0.06);
+    --text: #f3f4f6;
+    --text-dim: #9ca3af;
+    --text-muted: #6b7280;
+    --accent: #1677ff;
+    --accent-glow: rgba(22,119,255,0.35);
+    --green: #22c55e;
+    --red: #ef4444;
+    --purple: #7c3aed;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+  body {
+    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-root);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 232px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 14px 10px;
+    flex-shrink: 0;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 10px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    margin-bottom: 10px;
+  }
+  .brand-dot {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, #1677ff, #38bdf8);
+    display: grid; place-items: center; font-weight: 800; font-size: 13px;
+    box-shadow: 0 4px 14px var(--accent-glow);
+  }
+  .brand h1 { font-size: 13px; font-weight: 700; letter-spacing: 0.2px; }
+  .brand p { font-size: 10.5px; color: var(--text-muted); }
+
+  .nav-group { margin-top: 10px; }
+  .nav-label {
+    font-size: 10px; font-weight: 700; color: var(--text-muted);
+    letter-spacing: 0.8px; padding: 4px 10px 6px; text-transform: uppercase;
+  }
+  .nav-btn {
+    width: 100%; display: flex; align-items: center; gap: 10px;
+    padding: 8px 11px; border-radius: 8px; border: none;
+    background: transparent; color: var(--text-dim);
+    font-size: 12.5px; font-weight: 600; cursor: pointer;
+    transition: all 0.15s ease; text-align: left;
+  }
+  .nav-btn:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+  .nav-btn.active {
+    background: var(--accent); color: #fff;
+    box-shadow: 0 4px 14px var(--accent-glow);
+  }
+  .nav-btn svg { width: 15px; height: 15px; flex-shrink: 0; opacity: 0.9; }
+  .sidebar-foot {
+    margin-top: auto; padding: 10px; border-top: 1px solid var(--border-soft);
+    font-size: 11px; color: var(--text-muted); line-height: 1.5;
+  }
+
+  /* MAIN SHELL */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .topbar {
+    height: 54px; background: var(--bg-topbar);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; gap: 12px; flex-shrink: 0;
+  }
+  .tb-left, .tb-right { display: flex; align-items: center; gap: 8px; }
+  select, input[type="number"] {
+    background: var(--bg-card-2); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 6px 10px; font-size: 12px; outline: none;
+  }
+  select:focus, input[type="number"]:focus { border-color: var(--accent); }
+  .btn {
+    border: none; border-radius: 8px; padding: 7px 13px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.15s ease; color: #fff; background: var(--bg-card-2);
+  }
+  .btn:hover { filter: brightness(1.12); }
+  .btn-primary { background: var(--accent); box-shadow: 0 3px 12px var(--accent-glow); }
+  .btn-green { background: #16a34a; }
+  .btn-red { background: #dc2626; }
+  .btn-purple { background: var(--purple); }
+  .btn-ghost { background: #22252f; color: var(--text-dim); border: 1px solid var(--border); }
+  .pill {
+    padding: 5px 11px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.25);
+  }
+  .pill.warn { background: rgba(239,68,68,0.14); color: #f87171; border-color: rgba(239,68,68,0.35); }
+  .pill.neon-ok {
+    background: rgba(16, 185, 129, 0.16); color: #34d399;
+    border: 1px solid #10b981;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.75), 0 0 24px rgba(56, 189, 248, 0.35);
+  }
+  .pill.neon-wait {
+    background: rgba(245, 158, 11, 0.16); color: #fbbf24;
+    border: 1px solid #f59e0b;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.65);
+  }
+
+  /* CONTENT PAGES */
+  .content { flex: 1; overflow-y: auto; padding: 16px 22px; }
+  .page { display: none; animation: fadeIn 0.16s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+
+  .page-hdr { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+  .page-hdr h2 { font-size: 21px; font-weight: 700; }
+  .page-hdr p { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 12px; font-weight: 700; color: #7dd3fc;
+    letter-spacing: 0.4px; margin-bottom: 10px; text-transform: uppercase;
+  }
+
+  /* SEGMENTED & TOGGLES */
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .seg { display: inline-flex; background: #12141a; border: 1px solid var(--border); border-radius: 8px; padding: 2px; }
+  .seg button {
+    border: none; background: transparent; color: var(--text-dim);
+    padding: 5px 12px; font-size: 11.5px; font-weight: 600; border-radius: 6px; cursor: pointer;
+  }
+  .seg button.active { background: var(--accent); color: #fff; }
+  .toggle-wrap { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text-dim); cursor: pointer; }
+  .switch {
+    position: relative; width: 34px; height: 19px; background: #2b2f3c;
+    border-radius: 999px; transition: 0.2s; display: inline-block;
+  }
+  .switch::after {
+    content: ""; position: absolute; width: 15px; height: 15px; border-radius: 50%;
+    background: #fff; top: 2px; left: 2px; transition: 0.2s;
+  }
+  input:checked + .switch { background: var(--accent); }
+  input:checked + .switch::after { transform: translateX(15px); }
+  .hidden-chk { display: none; }
+
+  /* CANVAS */
+  .graph-wrap { position: relative; width: 100%; height: 285px; background: #111318; border-radius: 10px; border: 1px solid var(--border-soft); overflow: hidden; }
+  canvas { width: 100%; height: 100%; display: block; }
+  .graph-readout {
+    position: absolute; top: 10px; right: 14px; font-family: Consolas, monospace;
+    font-size: 11px; color: #60a5fa; background: rgba(14,16,21,0.8);
+    padding: 4px 9px; border-radius: 6px; border: 1px solid var(--border);
+  }
+
+  /* 10 BAND CARDS GRID */
+  .bands-grid {
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px; margin-top: 8px;
+  }
+  .band-card {
+    background: var(--bg-card-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 10px; transition: border-color 0.15s;
+  }
+  .band-card:hover { border-color: #3b82f6; }
+  .band-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .band-badge {
+    width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+    font-size: 10.5px; font-weight: 800; color: #fff;
+  }
+  .band-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-top: 6px; }
+  .band-field label { display: block; font-size: 9.5px; color: var(--text-muted); margin-bottom: 2px; }
+  .band-field input { width: 100%; padding: 4px 5px; font-size: 11px; font-family: Consolas, monospace; text-align: center; }
+
+  /* SLIDER ROWS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .slider-row { display: flex; align-items: center; gap: 12px; margin: 9px 0; }
+  .slider-row .lbl { width: 165px; font-size: 12.5px; color: var(--text-dim); }
+  .slider-row input[type="range"] {
+    flex: 1; -webkit-appearance: none; height: 5px; border-radius: 999px;
+    background: #272b36; outline: none;
+  }
+  .slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%;
+    background: #fff; border: 3px solid var(--accent); cursor: pointer;
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .slider-row .val { width: 62px; text-align: right; font-family: Consolas, monospace; font-size: 12px; color: #60a5fa; font-weight: 700; }
+
+  pre.mono-box {
+    background: #111318; border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px; font-family: Consolas, monospace; font-size: 11.5px;
+    color: #93c5fd; line-height: 1.55; max-height: 410px; overflow: auto; user-select: text;
+  }
+
+  /* BOTTOM AI GEMINI CHAT DOCK */
+  .ai-dock {
+    background: #13151c; border-top: 1px solid var(--border);
+    display: flex; flex-direction: column; flex-shrink: 0;
+  }
+  .ai-dock-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 18px; background: #161821; cursor: pointer;
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .ai-dock-body { padding: 10px 18px 12px; display: flex; flex-direction: column; gap: 8px; }
+  .ai-dock.collapsed .ai-dock-body { display: none; }
+  .ai-chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+  .ai-chip {
+    background: #1e222d; color: #93c5fd; border: 1px solid #2c3244;
+    border-radius: 999px; padding: 4px 10px; font-size: 11px; cursor: pointer;
+  }
+  .ai-chip:hover { background: #262c3d; border-color: var(--accent); }
+  .ai-chat-log {
+    height: 105px; overflow-y: auto; background: #0e1015;
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    display: flex; flex-direction: column; gap: 6px; font-size: 12px; user-select: text;
+  }
+  .ai-msg-user { align-self: flex-end; background: #1677ff; color: #fff; padding: 5px 10px; border-radius: 10px 10px 2px 10px; max-width: 78%; }
+  .ai-msg-bot { align-self: flex-start; background: #1d2029; color: #e5e7eb; padding: 6px 10px; border-radius: 10px 10px 10px 2px; max-width: 86%; border: 1px solid var(--border); }
+  .ai-input-row { display: flex; gap: 8px; align-items: center; }
+  .ai-input-row input[type="text"], .ai-input-row input[type="password"] {
+    background: var(--bg-card-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 11px; font-size: 12px; outline: none;
+  }
+  .ai-input-row input:focus { border-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-dot">AS</div>
+    <div>
+      <h1>An Sound Pro</h1>
+      <p>ACPWorkbench V2.44.2</p>
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Tone</div>
+    <button class="nav-btn active" data-page="eq" onclick="showPage('eq')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+      Equalizer (PEQ)
+    </button>
+    <button class="nav-btn" data-page="xover" onclick="showPage('xover')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17c4 0 5-10 9-10s5 10 9 10"/></svg>
+      3-Way Crossover
+    </button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Effects</div>
+    <button class="nav-btn" data-page="fx" onclick="showPage('fx')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+      MVBass & Exciter
+    </button>
+    <button class="nav-btn" data-page="gate" onclick="showPage('gate')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5L6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>
+      Gate & Delay
+    </button>
+    <button class="nav-btn" data-page="drc" onclick="showPage('drc')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      DRC & Protection
+    </button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Audio & Hardware</div>
+    <button class="nav-btn" data-page="io" onclick="showPage('io')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M5 9l7-7 7 7"/></svg>
+      Input Gains
+    </button>
+    <button class="nav-btn" data-page="info" onclick="showPage('info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+      Mạch & Auto-Tune
+    </button>
+  </div>
+
+  <div class="nav-group">
+    <div class="nav-label">Library & AI</div>
+    <button class="nav-btn" data-page="ai" onclick="showPage('ai')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l2.4 5.6L20 11l-5.6 2.4L12 19l-2.4-5.6L4 11l5.6-2.4L12 3z"/></svg>
+      ✨ Gemini DSP AI
+    </button>
+    <button class="nav-btn" data-page="presets" onclick="showPage('presets')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Presets & .INI / .C
+    </button>
+    <button class="nav-btn" data-page="monitor" onclick="showPage('monitor')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+      TX / RX Monitor
+    </button>
+  </div>
+
+  <div class="sidebar-foot">
+    <div><strong>MVSilicon BP1048B2</strong></div>
+    <div>FW 0.3.4 · Quốc Doàn 70Wx2</div>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="tb-left">
+      <select id="usbSelect" style="width: 280px;"></select>
+      <button class="btn btn-ghost" onclick="scanUsb()">Quét USB</button>
+      <button id="btnConn" class="btn btn-green" onclick="toggleConnect()">Kết nối</button>
+      <span id="usbStatusPill" class="pill warn">Chưa kết nối USB</span>
+    </div>
+    <div class="tb-right">
+      <button id="btnUndoTop" class="btn btn-ghost" title="Hoàn tác (Ctrl+Z)" onclick="undo()" disabled style="opacity:0.45;">↶ Undo</button>
+      <button id="btnRedoTop" class="btn btn-ghost" title="Làm lại (Ctrl+Y)" onclick="redo()" disabled style="opacity:0.45;">↷ Redo</button>
+      <span id="treblePill" class="pill">Treble Safe 4600</span>
+      <button class="btn btn-primary" onclick="pushAll()">⚡ Đẩy Toàn Bộ</button>
+      <button class="btn btn-purple" onclick="syncLaunchAcp()">🔄 ACPWorkbench V2.44.2</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <!-- PAGE 1: EQUALIZER -->
+    <section id="page-eq" class="page active">
+      <div class="page-hdr">
+        <div>
+          <h2>Equalizer</h2>
+          <p>Reference-grade 10-band parametric EQ · Kéo thả trực tiếp các điểm 1–10 trên đồ thị</p>
+        </div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <select id="peqChannel" onchange="onPeqChannelChange()">
+            <option value="149">0x95 · Bass SPK EQ (10-Band)</option>
+            <option value="151">0x97 · Mid SPK EQ (10-Band)</option>
+            <option value="150">0x96 · Treble SPK EQ (10-Band)</option>
+            <option value="145">0x91 · Music Tone EQ (10-Band)</option>
+          </select>
+          <button class="btn btn-primary" onclick="pushActivePeq()">⚡ Đẩy Kênh Này</button>
+        </div>
+      </div>
+
+      <div class="card toolbar">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div class="seg" id="modeSeg">
+            <button onclick="setMode('Basic', this)">Basic</button>
+            <button onclick="setMode('Advanced', this)">Advanced</button>
+            <button class="active" onclick="setMode('Expert', this)">Expert</button>
+          </div>
+          <label class="toggle-wrap"><input type="checkbox" id="chkOverlay" class="hidden-chk" checked onchange="drawEq()"><span class="switch"></span>Overlay 3-Way</label>
+          <label class="toggle-wrap"><input type="checkbox" id="chkHeadroom" class="hidden-chk" checked><span class="switch"></span>Auto headroom</label>
+          <label class="toggle-wrap"><input type="checkbox" id="chkLoudness" class="hidden-chk"><span class="switch"></span>Match loudness</label>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="seg">
+            <button id="btnA" class="active" onclick="switchAB('A')">A</button>
+            <button id="btnB" onclick="switchAB('B')">B</button>
+          </div>
+          <button class="btn btn-ghost" onclick="flatPeq()">↺ Flat</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="graph-wrap">
+          <canvas id="eqCanvas"></canvas>
+          <div id="eqReadout" class="graph-readout">Kéo điểm tròn (1–10) · Cuộn chuột để chỉnh Q</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Bands · 10-Band Parametric EQ</div>
+        <div id="bandsGrid" class="bands-grid"></div>
+      </div>
+    </section>
+
+    <!-- PAGE 2: 3-WAY CROSSOVER -->
+    <section id="page-xover" class="page">
+      <div class="page-hdr">
+        <div><h2>3-Way Crossover & Speaker Gains</h2><p>Sub JBL 5" (5L) · Mid Pioneer 6Ω · Treble Ford 4Ω 5W (3µF)</p></div>
+      </div>
+      <div class="card"><div class="graph-wrap" style="height:220px;"><canvas id="xoverCanvas"></canvas></div></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Music Tone Nhanh (0x91)</div>
+          <div class="slider-row"><span class="lbl">Bass (65 Hz)</span><input type="range" id="s_music_bass" min="-6" max="6" step="0.5" oninput="syncQuick()"><span class="val" id="v_music_bass"></span></div>
+          <div class="slider-row"><span class="lbl">Mid (800 Hz)</span><input type="range" id="s_music_mid" min="-6" max="6" step="0.5" oninput="syncQuick()"><span class="val" id="v_music_mid"></span></div>
+          <div class="slider-row"><span class="lbl">Treble (8.5 kHz)</span><input type="range" id="s_music_treble" min="-6" max="6" step="0.5" oninput="syncQuick()"><span class="val" id="v_music_treble"></span></div>
+          <div style="margin-top:14px; display:flex; gap:18px;">
+            <label class="toggle-wrap"><input type="checkbox" id="s_phase_180" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Đảo pha Sub 180° (0x9A)</label>
+            <label class="toggle-wrap"><input type="checkbox" id="s_drc_en" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Bật DRC / Limiter</label>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Điểm cắt & Gain Từng Củ Loa (0x95–0x99)</div>
+          <div class="slider-row"><span class="lbl">Sub HPF (0x95 Hz)</span><input type="range" id="s_bass_hpf" min="35" max="100" step="1" oninput="syncQuick()"><span class="val" id="v_bass_hpf"></span></div>
+          <div class="slider-row"><span class="lbl">Sub LPF (0x95 Hz)</span><input type="range" id="s_bass_lpf" min="90" max="220" step="5" oninput="syncQuick()"><span class="val" id="v_bass_lpf"></span></div>
+          <div class="slider-row"><span class="lbl">Sub Pregain (dB)</span><input type="range" id="s_bass_pre" min="-8" max="4" step="0.5" oninput="syncQuick()"><span class="val" id="v_bass_pre"></span></div>
+          <div class="slider-row"><span class="lbl">Mid HPF (0x97 Hz)</span><input type="range" id="s_mid_hpf" min="110" max="300" step="5" oninput="syncQuick()"><span class="val" id="v_mid_hpf"></span></div>
+          <div class="slider-row"><span class="lbl">Mid Gain (0x99)</span><input type="range" id="s_mid_gain" min="2000" max="6000" step="50" oninput="syncQuick()"><span class="val" id="v_mid_gain"></span></div>
+          <div class="slider-row"><span class="lbl">Treble HPF (0x96 Hz)</span><input type="range" id="s_treb_hpf" min="6500" max="12000" step="100" oninput="syncQuick()"><span class="val" id="v_treb_hpf"></span></div>
+          <div class="slider-row"><span class="lbl">Treble Gain (0x98)</span><input type="range" id="s_treb_gain" min="2000" max="6000" step="50" oninput="syncQuick()"><span class="val" id="v_treb_gain"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: MVBASS & EXCITER -->
+    <section id="page-fx" class="page">
+      <div class="page-hdr"><div><h2>MVBass & Harmonic Exciter</h2><p>Tái tạo trầm ảo cho Sub 5" & kích thích hài âm dải cao</p></div></div>
+      <div class="card">
+        <div class="card-title">MVBass Classic (0x87)</div>
+        <label class="toggle-wrap"><input type="checkbox" id="s_mvbc_en" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Bật MVBass Classic</label>
+        <div class="slider-row"><span class="lbl">Cutoff (Hz)</span><input type="range" id="s_mvbc_hz" min="35" max="160" step="1" oninput="syncQuick()"><span class="val" id="v_mvbc_hz"></span></div>
+        <div class="slider-row"><span class="lbl">Intensity (%)</span><input type="range" id="s_mvbc_int" min="0" max="100" step="2" oninput="syncQuick()"><span class="val" id="v_mvbc_int"></span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">MVBass Advanced (0x88) & Harmonic Exciter (0x89)</div>
+        <label class="toggle-wrap"><input type="checkbox" id="s_mvba_en" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Bật MVBass Advanced (0x88)</label>
+        <div class="slider-row"><span class="lbl">Adv Cutoff (Hz)</span><input type="range" id="s_mvba_hz" min="35" max="160" step="1" oninput="syncQuick()"><span class="val" id="v_mvba_hz"></span></div>
+        <div class="slider-row"><span class="lbl">Adv Intensity (%)</span><input type="range" id="s_mvba_int" min="0" max="100" step="2" oninput="syncQuick()"><span class="val" id="v_mvba_int"></span></div>
+        <hr style="border:none; border-top:1px solid var(--border); margin:12px 0;">
+        <label class="toggle-wrap"><input type="checkbox" id="s_exc_en" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Bật Harmonic Exciter (0x89)</label>
+        <div class="slider-row"><span class="lbl">Exciter Cutoff (Hz)</span><input type="range" id="s_exc_hz" min="1000" max="10000" step="100" oninput="syncQuick()"><span class="val" id="v_exc_hz"></span></div>
+        <div class="slider-row"><span class="lbl">Wet Mix (%)</span><input type="range" id="s_exc_wet" min="0" max="100" step="2" oninput="syncQuick()"><span class="val" id="v_exc_wet"></span></div>
+      </div>
+    </section>
+
+    <!-- PAGE 4: GATE & DELAY -->
+    <section id="page-gate" class="page">
+      <div class="page-hdr"><div><h2>Noise Gate & Phase Delay</h2><p>Chống xì nền lúc im lặng (0x85) & đồng pha Sub (0x9D)</p></div></div>
+      <div class="card">
+        <div class="card-title">Noise Gate (0x85)</div>
+        <label class="toggle-wrap"><input type="checkbox" id="s_ng_en" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Bật Noise Gate</label>
+        <div class="slider-row"><span class="lbl">Ngưỡng đóng cổng (dB)</span><input type="range" id="s_ng_th" min="-90" max="-30" step="1" oninput="syncQuick()"><span class="val" id="v_ng_th"></span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bass SPK Delay (0x9D)</div>
+        <label class="toggle-wrap"><input type="checkbox" id="s_bdly_en" class="hidden-chk" onchange="syncQuick()"><span class="switch"></span>Bật Bass Delay</label>
+        <div class="slider-row"><span class="lbl">Sub Delay (ms)</span><input type="range" id="s_bdly_ms" min="0" max="50" step="1" oninput="syncQuick()"><span class="val" id="v_bdly_ms"></span></div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: DRC -->
+    <section id="page-drc" class="page">
+      <div class="page-hdr"><div><h2>DRC & Speaker Protection</h2><p>Chống clipping & bảo vệ củ loa (0x93 · 0x9B · 0x9C)</p></div></div>
+      <div class="card">
+        <div class="slider-row"><span class="lbl">Music DRC (dBFS)</span><input type="range" id="s_mdrc_db" min="-12" max="0" step="0.5" oninput="syncQuick()"><span class="val" id="v_mdrc_db"></span></div>
+        <div class="slider-row"><span class="lbl">Sub / Mid DRC (dBFS)</span><input type="range" id="s_sdrc_db" min="-12" max="0" step="0.5" oninput="syncQuick()"><span class="val" id="v_sdrc_db"></span></div>
+        <div class="slider-row"><span class="lbl">DRC Ratio</span><input type="range" id="s_drc_rat" min="10" max="100" step="5" oninput="syncQuick()"><span class="val" id="v_drc_rat"></span></div>
+        <div class="slider-row"><span class="lbl">Attack (ms)</span><input type="range" id="s_drc_atk" min="1" max="50" step="1" oninput="syncQuick()"><span class="val" id="v_drc_atk"></span></div>
+        <div class="slider-row"><span class="lbl">Release (ms)</span><input type="range" id="s_drc_rel" min="20" max="500" step="10" oninput="syncQuick()"><span class="val" id="v_drc_rel"></span></div>
+      </div>
+    </section>
+
+    <!-- PAGE 6: INPUT GAINS -->
+    <section id="page-io" class="page">
+      <div class="page-hdr"><div><h2>Input Source Gains</h2><p>Cân bằng mức tín hiệu từng ngõ vào (0x81–0x84 & 0x92)</p></div></div>
+      <div class="card">
+        <div class="slider-row"><span class="lbl">I2S In Gain (0x81)</span><input type="range" id="s_in_i2s" min="0" max="8192" step="64" oninput="syncQuick()"><span class="val" id="v_in_i2s"></span></div>
+        <div class="slider-row"><span class="lbl">Bluetooth Gain (0x82)</span><input type="range" id="s_in_bt" min="0" max="8192" step="64" oninput="syncQuick()"><span class="val" id="v_in_bt"></span></div>
+        <div class="slider-row"><span class="lbl">USB/SD Gain (0x83)</span><input type="range" id="s_in_usb" min="0" max="8192" step="64" oninput="syncQuick()"><span class="val" id="v_in_usb"></span></div>
+        <div class="slider-row"><span class="lbl">OPT/HDMI Gain (0x84)</span><input type="range" id="s_in_opt" min="0" max="8192" step="64" oninput="syncQuick()"><span class="val" id="v_in_opt"></span></div>
+        <div class="slider-row"><span class="lbl">Remind Gain (0x92)</span><input type="range" id="s_in_rem" min="0" max="8192" step="64" oninput="syncQuick()"><span class="val" id="v_in_rem"></span></div>
+      </div>
+    </section>
+
+    <!-- PAGE 7: BOARD INFO & AUTO-TUNE -->
+    <section id="page-info" class="page">
+      <div class="page-hdr"><div><h2>Board Info & Smart Auto-Tune</h2><p>Tối ưu thông minh theo vật lý loa & khai thác toàn bộ thông số mạch</p></div></div>
+      <div class="card" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="runAutoTune('hifi')">🧠 Auto-Tune: Hi-Fi Cân Bằng</button>
+        <button class="btn btn-green" onclick="runAutoTune('outdoor')">🛡 Auto-Tune: Mở Lớn / Ngoài Trời</button>
+        <button class="btn btn-purple" onclick="runAutoTune('night')">🌙 Auto-Tune: Nghe Đêm / Nhỏ Tiếng</button>
+      </div>
+      <div class="card"><div class="card-title">Thông Tin Khai Thác Từ Mạch (.INI)</div><pre id="hwInfoBox" class="mono-box"></pre></div>
+    </section>
+
+    <!-- PAGE 8: PRESETS & EXPORT -->
+    <section id="page-presets" class="page">
+      <div class="page-hdr"><div><h2>Presets & Export (.INI / .C)</h2><p>Chuẩn ACPWorkbench V2.44.2 & Mảng Hex Firmware</p></div></div>
+      <div class="card">
+        <div class="card-title">Chọn Preset Tối Ưu</div>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <select id="presetSelect" style="width:360px;" onchange="selectPreset(this.value)"></select>
+          <button class="btn btn-ghost" onclick="openIniDialog()">📂 Nạp file .INI khác</button>
+        </div>
+        <p id="presetDesc" style="margin-top:8px; font-size:12px; color:var(--text-dim);"></p>
+      </div>
+      <div class="card" style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn btn-ghost" href="/api/export/ini" download="dsp_3way_acp_pro.ini" style="text-decoration:none;">💾 Tải .INI (ACPWorkbench)</a>
+        <a class="btn btn-ghost" href="/api/export/c" download="dsp_3way_acp_pro.c" style="text-decoration:none;">📄 Tải .C (Hex Array)</a>
+        <button class="btn btn-primary" onclick="writeAcpIni()">📌 Ghi đè ACPWorkbench.ini</button>
+      </div>
+    </section>
+
+    <!-- PAGE 9: MONITOR -->
+    <section id="page-monitor" class="page">
+      <div class="page-hdr">
+        <div><h2>TX / RX Hex Monitor</h2><p>Khung lệnh thời gian thực [0xA5 0x5A ... 0x16]</p></div>
+        <button class="btn btn-ghost" onclick="document.getElementById('logBox').textContent=''">Xóa log</button>
+      </div>
+      <div class="card"><pre id="logBox" class="mono-box"></pre></div>
+    </section>
+    <!-- PAGE 10: GEMINI DSP AI -->
+    <section id="page-ai" class="page">
+      <div class="page-hdr">
+        <div>
+          <h2>✨ Gemini DSP AI</h2>
+          <p>Điều chỉnh nối tiếp theo cấu hình gốc & các yêu cầu trước đó (Gemini API / Chrome / Smart DSP AI)</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span id="aiStatusTag" class="pill">Sẵn sàng</span>
+          <input type="password" id="geminiApiKey" placeholder="Gemini API Key (tùy chọn)" style="width:175px; background:var(--bg-card-2); color:#e5e7eb; border:1px solid var(--border); border-radius:8px; padding:6px 10px; font-size:12px;" onchange="localStorage.setItem('gemini_api_key', this.value)" />
+          <button class="btn btn-ghost" title="Mở Google AI Studio trên Chrome để lấy API Key miễn phí" onclick="api('/api/open_gemini_chrome',{url:'https://aistudio.google.com/apikey'})">🔑 Lấy Key Free</button>
+          <button class="btn btn-primary" onclick="testGeminiConnection()">🔌 Test kết nối</button>
+          <button class="btn btn-ghost" onclick="openGeminiBrowser()">🌐 Gemini Chrome</button>
+          <button class="btn btn-ghost" onclick="pasteGeminiJson()">📋 Dán JSON Web</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">1. Gợi ý từ cấu hình gốc trước đó</div>
+        <div class="ai-chips">
+          <button class="ai-chip" onclick="sendAiPrompt('Dựa vào cấu hình gốc, tăng bass sâu và gọn hơn, giảm ù thùng 5L')">Bass sâu & gọn (giảm ù 5L)</button>
+          <button class="ai-chip" onclick="sendAiPrompt('Dựa vào yêu cầu trước đó, làm giọng hát vocal ngọt và nổi rõ hơn')">Giọng hát ngọt nổi</button>
+          <button class="ai-chip" onclick="sendAiPrompt('Làm tép tơi sáng hơn nhưng giữ an toàn tuyệt đối <=4600 cho loa 5W')">Tép tơi sáng (an toàn <=4600)</button>
+          <button class="ai-chip" onclick="sendAiPrompt('Bật chống xì nền Noise Gate và siết DRC nghe lớn không vỡ')">Chống xì & nghe lớn</button>
+          <button class="ai-chip" onclick="sendAiPrompt('Khôi phục về cấu hình gốc ban đầu')">↺ Về cấu hình gốc</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">2. Đoạn chat giữa Bạn & AI</div>
+        <div id="aiChatLog" class="ai-chat-log" style="height:310px; margin-bottom:10px;">
+          <div class="ai-msg-bot">Đã lưu cấu hình gốc ban đầu làm mốc. Hãy chọn gợi ý hoặc nhập yêu cầu để AI điều chỉnh nối tiếp theo các yêu cầu trước đó.</div>
+        </div>
+        <div class="ai-input-row">
+          <input type="text" id="aiPromptInput" style="flex:1;" placeholder="Trao đổi với AI (VD: xin chào, tư vấn, hoặc yêu cầu tăng bass / ngọt vocal)..." onkeydown="if(event.key==='Enter') sendAiPrompt()" />
+          <label class="toggle-wrap" title="Nếu bật, sau khi AI đề xuất thông số sẽ tự động áp dụng ngay"><input type="checkbox" id="chkAutoApplyAi" class="hidden-chk"><span class="switch"></span>Tự động áp dụng</label>
+          <button class="btn btn-primary" onclick="sendAiPrompt()">Gửi AI</button>
+          <button id="btnApplyAi" class="btn btn-green" onclick="applyAiPatch()" disabled style="opacity:0.45;">✅ Áp dụng bản AI</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const BAND_COLORS = ["#3B82F6","#22C55E","#F97316","#A855F7","#EF4444","#06B6D4","#EAB308","#EC4899","#6366F1","#10B981"];
+const FILTER_NAMES = ["Peak","Low Shelf","High Shelf","LPF","HPF"];
+let STATE = null;
+let AB = { A: null, B: null };
+let activeSlot = "A";
+let dragIdx = null;
+let preDragSnap = null;
+let connected = false;
+const UNDO_STACK = [];
+const REDO_STACK = [];
+const MAX_HISTORY = 60;
+
+function cloneState(s) {
+  return JSON.parse(JSON.stringify(s));
+}
+
+function updateUndoRedoButtons() {
+  const u = document.getElementById("btnUndoTop");
+  const r = document.getElementById("btnRedoTop");
+  if (u) {
+    u.disabled = UNDO_STACK.length === 0;
+    u.style.opacity = UNDO_STACK.length === 0 ? "0.45" : "1";
+    u.textContent = UNDO_STACK.length ? `↶ Undo (${UNDO_STACK.length})` : "↶ Undo";
+  }
+  if (r) {
+    r.disabled = REDO_STACK.length === 0;
+    r.style.opacity = REDO_STACK.length === 0 ? "0.45" : "1";
+    r.textContent = REDO_STACK.length ? `↷ Redo (${REDO_STACK.length})` : "↷ Redo";
+  }
+}
+
+function pushUndoSnapshot(snap = null) {
+  if (!STATE) return;
+  const s = snap || cloneState(STATE);
+  if (UNDO_STACK.length > 0 && JSON.stringify(UNDO_STACK[UNDO_STACK.length - 1]) === JSON.stringify(s)) return;
+  UNDO_STACK.push(s);
+  if (UNDO_STACK.length > MAX_HISTORY) UNDO_STACK.shift();
+  REDO_STACK.length = 0;
+  updateUndoRedoButtons();
+}
+
+async function undo() {
+  if (UNDO_STACK.length === 0 || !STATE) return;
+  REDO_STACK.push(cloneState(STATE));
+  STATE = UNDO_STACK.pop();
+  updateUndoRedoButtons();
+  populateUI();
+  await saveState();
+  document.getElementById("eqReadout").textContent = `↶ Đã hoàn tác (Ctrl+Z) · còn ${UNDO_STACK.length} bước`;
+}
+
+async function redo() {
+  if (REDO_STACK.length === 0 || !STATE) return;
+  UNDO_STACK.push(cloneState(STATE));
+  STATE = REDO_STACK.pop();
+  updateUndoRedoButtons();
+  populateUI();
+  await saveState();
+  document.getElementById("eqReadout").textContent = `↷ Đã làm lại (Ctrl+Y) · còn ${REDO_STACK.length} bước`;
+}
+
+async function api(url, body=null) {
+  const opt = body ? { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) } : {};
+  const r = await fetch(url, opt);
+  return await r.json();
+}
+
+function showPage(id) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + id).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === id));
+  if (id === "eq") setTimeout(drawEq, 20);
+  if (id === "xover") setTimeout(drawXover, 20);
+  if (id === "monitor") refreshLogs();
+}
+
+function setMode(m, btn) {
+  document.querySelectorAll("#modeSeg button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function biquadMag(ftype, f0, q, gainDb, freqs, fs=48000) {
+  if (ftype === 0 && Math.abs(gainDb) < 0.05) return freqs.map(() => 0);
+  const w0 = 2 * Math.PI * Math.max(10, Math.min(fs*0.45, f0)) / fs;
+  const cw = Math.cos(w0), sw = Math.sin(w0);
+  const alpha = sw / (2 * Math.max(0.2, q));
+  const A = Math.pow(10, gainDb / 40);
+  let b0=1,b1=0,b2=0,a0=1,a1=0,a2=0;
+  if (ftype === 0) { b0=1+alpha*A; b1=-2*cw; b2=1-alpha*A; a0=1+alpha/A; a1=-2*cw; a2=1-alpha/A; }
+  else if (ftype === 4) { b0=(1+cw)/2; b1=-(1+cw); b2=(1+cw)/2; a0=1+alpha; a1=-2*cw; a2=1-alpha; }
+  else if (ftype === 3) { b0=(1-cw)/2; b1=1-cw; b2=(1-cw)/2; a0=1+alpha; a1=-2*cw; a2=1-alpha; }
+  else if (ftype === 1) {
+    const sq = 2*Math.sqrt(A)*alpha;
+    b0=A*((A+1)-(A-1)*cw+sq); b1=2*A*((A-1)-(A+1)*cw); b2=A*((A+1)-(A-1)*cw-sq);
+    a0=(A+1)+(A-1)*cw+sq; a1=-2*((A-1)+(A+1)*cw); a2=(A+1)+(A-1)*cw-sq;
+  } else if (ftype === 2) {
+    const sq = 2*Math.sqrt(A)*alpha;
+    b0=A*((A+1)+(A-1)*cw+sq); b1=-2*A*((A-1)+(A+1)*cw); b2=A*((A+1)+(A-1)*cw-sq);
+    a0=(A+1)-(A-1)*cw+sq; a1=2*((A-1)-(A+1)*cw); a2=(A+1)-(A-1)*cw-sq;
+  }
+  return freqs.map(f => {
+    const w = 2*Math.PI*f/fs, c1=Math.cos(w), s1=Math.sin(w), c2=Math.cos(2*w), s2=Math.sin(2*w);
+    const nr = b0+b1*c1+b2*c2, ni = -b1*s1-b2*s2;
+    const dr = a0+a1*c1+a2*c2, di = -a1*s1-a2*s2;
+    return 20 * Math.log10(Math.max(1e-6, Math.sqrt((nr*nr+ni*ni)/Math.max(1e-18, dr*dr+di*di))));
+  });
+}
+
+function getActiveBands() {
+  const ch = document.getElementById("peqChannel").value;
+  return STATE.peq_banks[ch] || [];
+}
+
+function renderBandCards() {
+  const grid = document.getElementById("bandsGrid");
+  const bands = getActiveBands();
+  grid.innerHTML = "";
+  bands.forEach((b, i) => {
+    const col = BAND_COLORS[i];
+    const div = document.createElement("div");
+    div.className = "band-card";
+    div.innerHTML = `
+      <div class="band-top">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <input type="checkbox" ${b.enable?"checked":""} onchange="updateBand(${i},'enable',this.checked)">
+          <span class="band-badge" style="background:${col}">${i+1}</span>
+        </div>
+        <select style="padding:2px 6px;font-size:11px;" onchange="updateBand(${i},'ftype',+this.value)">
+          ${FILTER_NAMES.map((n,t)=>`<option value="${t}" ${b.ftype===t?"selected":""}>${n}</option>`).join("")}
+        </select>
+      </div>
+      <div class="band-fields">
+        <div class="band-field"><label>Hz</label><input type="number" min="20" max="20000" value="${b.f0_hz}" onchange="updateBand(${i},'f0_hz',+this.value)"></div>
+        <div class="band-field"><label>Q</label><input type="number" min="0.2" max="10" step="0.05" value="${b.q.toFixed(2)}" onchange="updateBand(${i},'q',+this.value)"></div>
+        <div class="band-field"><label>dB</label><input type="number" min="-15" max="15" step="0.5" value="${b.gain_db.toFixed(1)}" onchange="updateBand(${i},'gain_db',+this.value)"></div>
+      </div>`;
+    grid.appendChild(div);
+  });
+}
+
+function updateBand(i, key, val) {
+  pushUndoSnapshot();
+  const bands = getActiveBands();
+  bands[i][key] = val;
+  drawEq();
+  saveState();
+}
+
+function drawEq() {
+  const cv = document.getElementById("eqCanvas");
+  if (!cv || !STATE) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = cv.getBoundingClientRect();
+  if (rect.width < 10) return;
+  cv.width = rect.width * dpr; cv.height = rect.height * dpr;
+  const ctx = cv.getContext("2d");
+  ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height;
+  const padL=40, padR=16, padT=26, padB=24, pw=w-padL-padR, ph=h-padT-padB;
+  const fx = f => padL + pw * (Math.log10(Math.max(20,Math.min(20000,f))) - Math.log10(20)) / 3;
+  const fy = db => padT + ph * (18 - Math.max(-18,Math.min(18,db))) / 36;
+  const y0 = fy(0);
+
+  ctx.clearRect(0,0,w,h);
+  // Zones
+  ctx.font = "600 9.5px Segoe UI"; ctx.fillStyle = "#4b5563"; ctx.textAlign = "center";
+  [[28,"LOW BASS"],[85,"BASS"],[210,"LOW MID"],[650,"MID"],[2000,"UPPER MID"],[4800,"PRESENCE"],[12000,"TREBLE"]].forEach(([f,t])=>{
+    ctx.fillText(t, fx(f), 14);
+  });
+  // Grid
+  ctx.font = "10px Consolas"; ctx.textAlign = "right";
+  [-18,-12,-6,0,6,12,18].forEach(db => {
+    const y = fy(db);
+    ctx.strokeStyle = db===0 ? "rgba(255,255,255,0.16)" : "rgba(255,255,255,0.05)";
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+    ctx.fillStyle = "#6b7280"; ctx.fillText(db>0?"+"+db:db, padL-6, y+3);
+  });
+  ctx.textAlign = "center";
+  [32,64,125,250,500,1000,2000,4000,8000,16000].forEach(f => {
+    const x = fx(f);
+    ctx.strokeStyle = "rgba(255,255,255,0.04)";
+    ctx.beginPath(); ctx.moveTo(x,padT); ctx.lineTo(x,h-padB); ctx.stroke();
+    ctx.fillStyle = "#6b7280"; ctx.fillText(f>=1000?(f/1000)+"k":f, x, h-7);
+  });
+
+  const freqs = Array.from({length:160}, (_,i)=> 20*Math.pow(1000, i/159));
+  const bands = getActiveBands();
+  const sum = new Array(freqs.length).fill(0);
+
+  bands.forEach((b, i) => {
+    if (!b.enable) return;
+    const resp = biquadMag(b.ftype, b.f0_hz, b.q, b.gain_db, freqs);
+    resp.forEach((v, idx) => sum[idx] += v);
+    const col = BAND_COLORS[i];
+    ctx.beginPath();
+    ctx.moveTo(fx(freqs[0]), y0);
+    freqs.forEach((f, idx) => ctx.lineTo(fx(f), fy(resp[idx])));
+    ctx.lineTo(fx(freqs[freqs.length-1]), y0);
+    ctx.closePath();
+    ctx.fillStyle = col + "22";
+    ctx.fill();
+    ctx.beginPath();
+    freqs.forEach((f, idx) => idx===0 ? ctx.moveTo(fx(f), fy(resp[idx])) : ctx.lineTo(fx(f), fy(resp[idx])));
+    ctx.strokeStyle = col; ctx.lineWidth = 1.4; ctx.stroke();
+  });
+
+  // Master sum curve
+  ctx.beginPath();
+  freqs.forEach((f, idx) => idx===0 ? ctx.moveTo(fx(f), fy(sum[idx])) : ctx.lineTo(fx(f), fy(sum[idx])));
+  ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2.6; ctx.stroke();
+
+  // Nodes 1..10
+  bands.forEach((b, i) => {
+    if (!b.enable) return;
+    const x = fx(b.f0_hz);
+    const y = (b.ftype===0||b.ftype===1||b.ftype===2) ? fy(b.gain_db) : y0;
+    ctx.beginPath(); ctx.arc(x, y, 9.5, 0, Math.PI*2);
+    ctx.fillStyle = BAND_COLORS[i]; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = "#fff"; ctx.stroke();
+    ctx.fillStyle = "#fff"; ctx.font = "bold 10px Segoe UI"; ctx.textAlign = "center";
+    ctx.fillText(String(i+1), x, y+3.5);
+  });
+}
+
+function drawXover() {
+  const cv = document.getElementById("xoverCanvas");
+  if (!cv || !STATE) return;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = cv.getBoundingClientRect();
+  if (rect.width < 10) return;
+  cv.width = rect.width * dpr; cv.height = rect.height * dpr;
+  const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr);
+  const w = rect.width, h = rect.height, padL=40, padR=16, padT=16, padB=22, pw=w-padL-padR, ph=h-padT-padB;
+  const fx = f => padL + pw * (Math.log10(f) - Math.log10(20)) / 3;
+  const fy = db => padT + ph * (12 - Math.max(-24,Math.min(12,db))) / 36;
+  const freqs = Array.from({length:140}, (_,i)=> 20*Math.pow(1000, i/139));
+  ctx.clearRect(0,0,w,h);
+  [-18,-12,-6,0,6].forEach(db => {
+    const y = fy(db); ctx.strokeStyle = db===0?"rgba(255,255,255,0.16)":"rgba(255,255,255,0.05)";
+    ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(w-padR,y); ctx.stroke();
+  });
+  const sub = freqs.map(()=> STATE.bass_pregain_db + STATE.music_bass_db*0.6);
+  [biquadMag(4,STATE.bass_hpf_hz,0.707,0,freqs), biquadMag(4,STATE.bass_hpf_hz,0.707,0,freqs),
+   biquadMag(3,STATE.bass_lpf_hz,0.707,0,freqs), biquadMag(3,STATE.bass_lpf_hz,0.707,0,freqs)]
+   .forEach(arr => arr.forEach((v,i)=> sub[i]+=v));
+  const midOff = 20*Math.log10(Math.max(0.1, STATE.mid_gain_raw/4096)) + STATE.music_mid_db*0.6 - 2;
+  const mid = freqs.map(()=> midOff);
+  [biquadMag(4,STATE.mid_hpf_hz,0.707,0,freqs), biquadMag(4,STATE.mid_hpf_hz,0.707,0,freqs)].forEach(arr=>arr.forEach((v,i)=>mid[i]+=v));
+  const trbOff = 20*Math.log10(Math.max(0.1, STATE.treble_gain_raw/4096)) + STATE.music_treble_db*0.6 - 2;
+  const trb = freqs.map(()=> trbOff);
+  [biquadMag(4,STATE.treble_hpf_hz,0.707,0,freqs), biquadMag(4,STATE.treble_hpf_hz,0.707,0,freqs)].forEach(arr=>arr.forEach((v,i)=>trb[i]+=v));
+
+  [[sub,"#38bdf8"],[mid,"#22c55e"],[trb,"#f59e0b"]].forEach(([arr,col])=>{
+    ctx.beginPath();
+    freqs.forEach((f,i)=> i===0?ctx.moveTo(fx(f),fy(arr[i])):ctx.lineTo(fx(f),fy(arr[i])));
+    ctx.strokeStyle = col; ctx.lineWidth = 2.4; ctx.stroke();
+  });
+}
+
+// Canvas mouse drag for nodes 1..10
+const eqCv = document.getElementById("eqCanvas");
+eqCv.addEventListener("mousedown", e => {
+  const rect = eqCv.getBoundingClientRect(), w=rect.width, h=rect.height;
+  const padL=40, padR=16, padT=26, padB=24, pw=w-padL-padR, ph=h-padT-padB;
+  const fx = f => padL + pw*(Math.log10(f)-Math.log10(20))/3;
+  const fy = db => padT + ph*(18-db)/36;
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let best = null, bd = 16;
+  getActiveBands().forEach((b,i)=>{
+    if (!b.enable) return;
+    const d = Math.hypot(mx - fx(b.f0_hz), my - fy(b.gain_db));
+    if (d < bd) { bd = d; best = i; }
+  });
+  dragIdx = best;
+  if (dragIdx !== null) preDragSnap = cloneState(STATE);
+});
+eqCv.addEventListener("wheel", e => {
+  const rect = eqCv.getBoundingClientRect(), w=rect.width, h=rect.height;
+  const padL=40, padR=16, padT=26, padB=24, pw=w-padL-padR, ph=h-padT-padB;
+  const fx = f => padL + pw*(Math.log10(f)-Math.log10(20))/3;
+  const fy = db => padT + ph*(18-db)/36;
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  let best = null, bd = 20;
+  getActiveBands().forEach((b,i)=>{
+    if (!b.enable) return;
+    const d = Math.hypot(mx - fx(b.f0_hz), my - fy(b.gain_db));
+    if (d < bd) { bd = d; best = i; }
+  });
+  if (best === null) return;
+  e.preventDefault();
+  pushUndoSnapshot();
+  const b = getActiveBands()[best];
+  const delta = e.deltaY < 0 ? 0.1 : -0.1;
+  b.q = Math.max(0.2, Math.min(10.0, +(b.q + delta).toFixed(2)));
+  document.getElementById("eqReadout").textContent = `Band ${best+1} · ${b.f0_hz} Hz · ${b.gain_db>=0?'+':''}${b.gain_db.toFixed(1)} dB · Q ${b.q.toFixed(2)}`;
+  drawEq(); renderBandCards(); saveState();
+}, { passive: false });
+window.addEventListener("mousemove", e => {
+  if (dragIdx === null) return;
+  const rect = eqCv.getBoundingClientRect(), w=rect.width, h=rect.height;
+  const padL=40, padR=16, padT=26, padB=24, pw=w-padL-padR, ph=h-padT-padB;
+  const t = Math.max(0, Math.min(1, (e.clientX - rect.left - padL)/pw));
+  const f = Math.round(20 * Math.pow(1000, t));
+  const g = Math.max(-15, Math.min(15, +(18 - Math.max(0,Math.min(1,(e.clientY - rect.top - padT)/ph))*36).toFixed(1)));
+  const b = getActiveBands()[dragIdx];
+  b.f0_hz = f;
+  if (b.ftype===0||b.ftype===1||b.ftype===2) b.gain_db = g;
+  document.getElementById("eqReadout").textContent = `Band ${dragIdx+1} · ${b.f0_hz} Hz · ${b.gain_db>=0?'+':''}${b.gain_db.toFixed(1)} dB · Q ${b.q.toFixed(2)}`;
+  drawEq(); renderBandCards();
+});
+window.addEventListener("mouseup", () => {
+  if (dragIdx !== null) {
+    dragIdx = null;
+    if (preDragSnap) { pushUndoSnapshot(preDragSnap); preDragSnap = null; }
+    pushActivePeq();
+  }
+});
+
+function populateUI() {
+  const map = [
+    ["s_music_bass","v_music_bass","music_bass_db",1],["s_music_mid","v_music_mid","music_mid_db",1],["s_music_treble","v_music_treble","music_treble_db",1],
+    ["s_bass_hpf","v_bass_hpf","bass_hpf_hz",0],["s_bass_lpf","v_bass_lpf","bass_lpf_hz",0],["s_bass_pre","v_bass_pre","bass_pregain_db",1],
+    ["s_mid_hpf","v_mid_hpf","mid_hpf_hz",0],["s_mid_gain","v_mid_gain","mid_gain_raw",0],["s_treb_hpf","v_treb_hpf","treble_hpf_hz",0],["s_treb_gain","v_treb_gain","treble_gain_raw",0],
+    ["s_mvbc_hz","v_mvbc_hz","mvb_classic_hz",0],["s_mvbc_int","v_mvbc_int","mvb_classic_int",0],
+    ["s_mvba_hz","v_mvba_hz","mvb_adv_hz",0],["s_mvba_int","v_mvba_int","mvb_adv_int",0],
+    ["s_exc_hz","v_exc_hz","exc_hz",0],["s_exc_wet","v_exc_wet","exc_wet",0],
+    ["s_ng_th","v_ng_th","ng_thresh_db",1],["s_bdly_ms","v_bdly_ms","bass_delay_ms",0],
+    ["s_mdrc_db","v_mdrc_db","music_drc_dbfs",1],["s_sdrc_db","v_sdrc_db","spk_drc_dbfs",1],
+    ["s_drc_rat","v_drc_rat","drc_ratio",0],["s_drc_atk","v_drc_atk","drc_attack_ms",0],["s_drc_rel","v_drc_rel","drc_release_ms",0],
+    ["s_in_i2s","v_in_i2s","in_i2s_gain",0],["s_in_bt","v_in_bt","in_bt_gain",0],["s_in_usb","v_in_usb","in_usb_gain",0],["s_in_opt","v_in_opt","in_opt_gain",0],["s_in_rem","v_in_rem","remind_gain",0],
+  ];
+  map.forEach(([sid,vid,key,dec])=>{
+    document.getElementById(sid).value = STATE[key];
+    document.getElementById(vid).textContent = dec ? Number(STATE[key]).toFixed(dec) : STATE[key];
+  });
+  document.getElementById("s_phase_180").checked = STATE.bass_phase_180;
+  document.getElementById("s_drc_en").checked = STATE.drc_enabled;
+  document.getElementById("s_mvbc_en").checked = STATE.mvb_classic_en;
+  document.getElementById("s_mvba_en").checked = STATE.mvb_adv_en;
+  document.getElementById("s_exc_en").checked = STATE.exc_en;
+  document.getElementById("s_ng_en").checked = STATE.ng_enable;
+  document.getElementById("s_bdly_en").checked = STATE.bass_delay_en;
+
+  const pill = document.getElementById("treblePill");
+  if (STATE.treble_gain_raw > 4600) { pill.textContent = "WARN Treble " + STATE.treble_gain_raw; pill.classList.add("warn"); }
+  else { pill.textContent = "Treble Safe " + STATE.treble_gain_raw; pill.classList.remove("warn"); }
+
+  document.getElementById("hwInfoBox").textContent = STATE.hw_info || "";
+  document.getElementById("presetDesc").textContent = STATE.description || "";
+  renderBandCards();
+  drawEq();
+  drawXover();
+}
+
+function syncQuick() {
+  const pairs = [
+    ["s_music_bass","v_music_bass","music_bass_db",1],["s_music_mid","v_music_mid","music_mid_db",1],["s_music_treble","v_music_treble","music_treble_db",1],
+    ["s_bass_hpf","v_bass_hpf","bass_hpf_hz",0],["s_bass_lpf","v_bass_lpf","bass_lpf_hz",0],["s_bass_pre","v_bass_pre","bass_pregain_db",1],
+    ["s_mid_hpf","v_mid_hpf","mid_hpf_hz",0],["s_mid_gain","v_mid_gain","mid_gain_raw",0],["s_treb_hpf","v_treb_hpf","treble_hpf_hz",0],["s_treb_gain","v_treb_gain","treble_gain_raw",0],
+    ["s_mvbc_hz","v_mvbc_hz","mvb_classic_hz",0],["s_mvbc_int","v_mvbc_int","mvb_classic_int",0],
+    ["s_mvba_hz","v_mvba_hz","mvb_adv_hz",0],["s_mvba_int","v_mvba_int","mvb_adv_int",0],
+    ["s_exc_hz","v_exc_hz","exc_hz",0],["s_exc_wet","v_exc_wet","exc_wet",0],
+    ["s_ng_th","v_ng_th","ng_thresh_db",1],["s_bdly_ms","v_bdly_ms","bass_delay_ms",0],
+    ["s_mdrc_db","v_mdrc_db","music_drc_dbfs",1],["s_sdrc_db","v_sdrc_db","spk_drc_dbfs",1],
+    ["s_drc_rat","v_drc_rat","drc_ratio",0],["s_drc_atk","v_drc_atk","drc_attack_ms",0],["s_drc_rel","v_drc_rel","drc_release_ms",0],
+    ["s_in_i2s","v_in_i2s","in_i2s_gain",0],["s_in_bt","v_in_bt","in_bt_gain",0],["s_in_usb","v_in_usb","in_usb_gain",0],["s_in_opt","v_in_opt","in_opt_gain",0],["s_in_rem","v_in_rem","remind_gain",0],
+  ];
+  pairs.forEach(([sid,vid,key,dec])=>{
+    const v = Number(document.getElementById(sid).value);
+    STATE[key] = v;
+    document.getElementById(vid).textContent = dec ? v.toFixed(dec) : v;
+  });
+  STATE.bass_phase_180 = document.getElementById("s_phase_180").checked;
+  STATE.drc_enabled = document.getElementById("s_drc_en").checked;
+  STATE.mvb_classic_en = document.getElementById("s_mvbc_en").checked;
+  STATE.mvb_adv_en = document.getElementById("s_mvba_en").checked;
+  STATE.exc_en = document.getElementById("s_exc_en").checked;
+  STATE.ng_enable = document.getElementById("s_ng_en").checked;
+  STATE.bass_delay_en = document.getElementById("s_bdly_en").checked;
+
+  const pill = document.getElementById("treblePill");
+  if (STATE.treble_gain_raw > 4600) { pill.textContent = "WARN Treble " + STATE.treble_gain_raw; pill.classList.add("warn"); }
+  else { pill.textContent = "Treble Safe " + STATE.treble_gain_raw; pill.classList.remove("warn"); }
+  drawXover();
+  saveState();
+}
+
+async function saveState() { await api("/api/update", STATE); }
+async function pushActivePeq() { await saveState(); await api("/api/push_channel", { effect_id: Number(document.getElementById("peqChannel").value) }); }
+async function pushAll() {
+  await saveState();
+  const r = await api("/api/push_all", {});
+  refreshLogs();
+  const pill = document.getElementById("usbStatusPill");
+  if (r.connected) { pill.textContent = "USB OK · " + r.count + " khối"; pill.classList.remove("warn"); }
+  alert(r.message);
+}
+async function runAutoTune(mode) { pushUndoSnapshot(); STATE = await api("/api/autotune", { mode }); populateUI(); }
+async function selectPreset(idx) { pushUndoSnapshot(); STATE = await api("/api/preset", { index: Number(idx) }); populateUI(); }
+async function writeAcpIni() { await saveState(); const r = await api("/api/write_acp_ini", {}); alert(r.message); }
+async function syncLaunchAcp() { await saveState(); const r = await api("/api/sync_acp", {}); if (r.message) alert(r.message); }
+async function openIniDialog() { const s = await api("/api/load_ini_dialog", {}); if (s && s.peq_banks) { pushUndoSnapshot(); STATE = s; populateUI(); } }
+
+function onPeqChannelChange() { renderBandCards(); drawEq(); }
+function flatPeq() {
+  pushUndoSnapshot();
+  getActiveBands().forEach(b => { if (b.ftype===0||b.ftype===1||b.ftype===2) b.gain_db = 0; });
+  renderBandCards(); drawEq(); saveState();
+}
+function switchAB(slot) {
+  pushUndoSnapshot();
+  const ch = document.getElementById("peqChannel").value;
+  AB[activeSlot] = JSON.parse(JSON.stringify(getActiveBands()));
+  activeSlot = slot;
+  document.getElementById("btnA").classList.toggle("active", slot==="A");
+  document.getElementById("btnB").classList.toggle("active", slot==="B");
+  if (AB[slot]) { STATE.peq_banks[ch] = JSON.parse(JSON.stringify(AB[slot])); renderBandCards(); drawEq(); saveState(); }
+}
+
+async function scanUsb() {
+  const res = await api("/api/usb/scan");
+  const sel = document.getElementById("usbSelect");
+  sel.innerHTML = "";
+  if (!res.endpoints.length) {
+    sel.innerHTML = "<option value='-1'>(Không thấy USB HID / COM — bật nguồn pin loa trước)</option>";
+    return;
+  }
+  res.endpoints.forEach((e, i) => {
+    const o = document.createElement("option");
+    o.value = i; o.textContent = e.label;
+    sel.appendChild(o);
+  });
+}
+
+async function toggleConnect() {
+  const btn = document.getElementById("btnConn");
+  const pill = document.getElementById("usbStatusPill");
+  if (connected) {
+    await api("/api/usb/disconnect", {});
+    connected = false; btn.textContent = "Kết nối"; btn.className = "btn btn-green";
+    pill.textContent = "Chưa kết nối USB"; pill.classList.add("warn");
+  } else {
+    const idx = Number(document.getElementById("usbSelect").value);
+    const r = await api("/api/usb/connect", { index: idx });
+    if (r.ok) {
+      connected = true; btn.textContent = "Ngắt kết nối"; btn.className = "btn btn-red";
+      pill.textContent = "Đã kết nối USB"; pill.classList.remove("warn");
+      alert(r.message);
+    } else {
+      pill.textContent = "Kết nối USB thất bại"; pill.classList.add("warn");
+      alert(r.message || "Không kết nối được USB");
+    }
+  }
+}
+
+async function testGeminiConnection() {
+  const tag = document.getElementById("aiStatusTag");
+  const key = (document.getElementById("geminiApiKey").value || "").trim();
+  tag.className = "pill neon-wait";
+  tag.textContent = "🟡 Neon: Đang kiểm tra kết nối...";
+  const chromeSt = await api("/api/gemini_chrome_status");
+  if (key) {
+    const r = await api("/api/ai/test", { api_key: key });
+    if (r.ok) {
+      tag.className = "pill neon-ok";
+      tag.textContent = "🟢 Neon Connected · Gemini API OK";
+      appendAiMsg("bot", "🟢 " + r.message);
+    } else {
+      if (r.invalid_key) {
+        document.getElementById("geminiApiKey").value = "";
+        localStorage.removeItem("gemini_api_key");
+      }
+      tag.className = "pill warn";
+      tag.textContent = "🔴 Gemini API Lỗi";
+      appendAiMsg("bot", "🔴 " + r.message);
+    }
+    return;
+  }
+  if (chromeSt && chromeSt.ok) {
+    tag.className = "pill neon-ok";
+    tag.textContent = "🟢 Neon Connected · Chrome Gemini OK";
+    appendAiMsg("bot", "🟢 <b>Neon kiểm tra thành công:</b> Chrome đang mở và <code>gemini.google.com</code> đã kết nối! Bạn có thể bấm <b>🌐 Gemini Chrome</b> rồi <b>📋 Dán JSON Web</b>, hoặc nhập Gemini API Key để chat LLM trực tiếp trong app.");
+  } else {
+    tag.className = "pill warn";
+    tag.textContent = "🔴 Neon Offline";
+    appendAiMsg("bot", `🔴 Neon kiểm tra: <b>${chromeSt ? chromeSt.message : "Chưa kết nối"}</b>. Chưa nhập Gemini API Key và chưa mở Chrome Gemini.`);
+  }
+}
+
+async function refreshLogs() {
+  const r = await api("/api/logs");
+  document.getElementById("logBox").textContent = (r.logs || []).join("\n");
+}
+
+window.addEventListener("resize", () => { drawEq(); drawXover(); });
+
+// Global Ctrl+Z (Undo) and Ctrl+Y / Ctrl+Shift+Z (Redo)
+window.addEventListener("keydown", e => {
+  if (!(e.ctrlKey || e.metaKey)) return;
+  const k = e.key.toLowerCase();
+  if (k === "z" && !e.shiftKey) {
+    e.preventDefault();
+    undo();
+  } else if (k === "y" || (k === "z" && e.shiftKey)) {
+    e.preventDefault();
+    redo();
+  }
+});
+
+// AI Gemini Assistant State
+let AI_BASELINE = null;
+const AI_HISTORY = [];
+let PENDING_AI_PATCH = null;
+
+function toggleAiDock() {
+  const dock = document.getElementById("aiDock");
+  dock.classList.toggle("collapsed");
+  document.getElementById("aiToggleArrow").textContent = dock.classList.contains("collapsed") ? "▲ Mở AI Chat" : "▼ Thu gọn";
+  setTimeout(() => { drawEq(); drawXover(); }, 30);
+}
+
+function appendAiMsg(role, htmlText) {
+  const box = document.getElementById("aiChatLog");
+  const div = document.createElement("div");
+  div.className = role === "user" ? "ai-msg-user" : "ai-msg-bot";
+  div.innerHTML = htmlText;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+async function sendAiPrompt(presetText = null) {
+  const inp = document.getElementById("aiPromptInput");
+  const prompt = (presetText !== null ? presetText : inp.value).trim();
+  if (!prompt || !STATE) return;
+  if (presetText === null) inp.value = "";
+
+  appendAiMsg("user", prompt);
+  AI_HISTORY.push({ role: "user", text: prompt });
+
+  const pLow = prompt.toLowerCase();
+  if (PENDING_AI_PATCH && Object.keys(PENDING_AI_PATCH).length > 0 && /^(ok|xử lý|áp dụng|đồng ý|chạy|làm đi|triển khai)/.test(pLow)) {
+    await applyAiPatch(true);
+    return;
+  }
+
+  document.getElementById("aiStatusTag").textContent = "Đang phân tích...";
+
+  const apiKey = (document.getElementById("geminiApiKey").value || "").trim();
+  const res = await api("/api/ai/chat", {
+    prompt,
+    history: AI_HISTORY,
+    baseline: AI_BASELINE,
+    api_key: apiKey,
+  });
+
+  if (res && res.ok) {
+    const changes = res.changes || {};
+    const hasChanges = Object.keys(changes).length > 0;
+    let pid = -1;
+    if (hasChanges) {
+      if (!window.AI_PROPOSALS) window.AI_PROPOSALS = [];
+      pid = window.AI_PROPOSALS.length;
+      window.AI_PROPOSALS.push(changes);
+      PENDING_AI_PATCH = changes;
+    }
+    const diffList = Object.entries(changes).map(([k, v]) => `${k}: <b>${v}</b>`).join(" · ");
+    const applyBtnHtml = hasChanges
+      ? `<div style="margin-top:7px;"><button class="btn btn-green" style="padding:4px 11px;font-size:11.5px;" onclick="applyAiProposal(${pid}, this)">✅ Áp dụng cấu hình này</button></div>`
+      : "";
+    const replyHtml = `<div>[${res.source}] ${res.reply}</div>` +
+      (diffList ? `<div style="margin-top:4px;font-size:11px;color:#93c5fd;">Đề xuất: ${diffList}</div>` : "") +
+      applyBtnHtml;
+    appendAiMsg("bot", replyHtml);
+    AI_HISTORY.push({ role: "assistant", text: res.reply });
+    const btn = document.getElementById("btnApplyAi");
+    btn.disabled = !hasChanges;
+    btn.style.opacity = hasChanges ? "1" : "0.45";
+    document.getElementById("aiStatusTag").textContent = hasChanges ? "Chờ bạn áp dụng" : "Sẵn sàng";
+    if (hasChanges && document.getElementById("chkAutoApplyAi").checked) {
+      await applyAiPatch(true);
+    }
+  } else {
+    document.getElementById("aiStatusTag").textContent = "Lỗi AI";
+  }
+}
+
+async function applyAiProposal(pid, btnEl = null) {
+  if (!window.AI_PROPOSALS || !window.AI_PROPOSALS[pid]) return;
+  PENDING_AI_PATCH = window.AI_PROPOSALS[pid];
+  await applyAiPatch(true);
+  if (btnEl) {
+    btnEl.textContent = "✅ Đã áp dụng vào phần mềm";
+    btnEl.disabled = true;
+    btnEl.style.opacity = "0.65";
+  }
+}
+
+async function applyAiPatch(autoPush = false) {
+  if (!PENDING_AI_PATCH || !STATE) return;
+  pushUndoSnapshot();
+  Object.entries(PENDING_AI_PATCH).forEach(([k, v]) => {
+    if (k in STATE) STATE[k] = v;
+  });
+  await saveState();
+  populateUI();
+  let pushNote = "";
+  if (autoPush && connected) {
+    const r = await api("/api/push_all", {});
+    pushNote = ` & đã đẩy ${r.count} khối lên mạch USB thật`;
+  }
+  PENDING_AI_PATCH = null;
+  const btn = document.getElementById("btnApplyAi");
+  btn.disabled = true; btn.style.opacity = "0.45";
+  document.getElementById("aiStatusTag").textContent = "Đã xử lý xong";
+  appendAiMsg("bot", `⚡ Hệ thống đã tự động xử lý & cập nhật cấu hình${pushNote} (bấm <b>Ctrl+Z</b> nếu muốn quay lại).`);
+}
+
+async function openGeminiBrowser() {
+  const tag = document.getElementById("aiStatusTag");
+  const promptText = (document.getElementById("aiPromptInput").value || "Dựa vào cấu hình gốc, tối ưu 3-Way Sub 5 inch 5L, Mid 6 Ohm, Treble 4 Ohm 5W (<=4600)").trim();
+  const fullPrompt =
+    `Tôi đang chỉnh mạch DSP MVSilicon BP1048B2 (Quốc Doàn 70Wx2: Sub 5" 5L, Mid 6Ω, Treble 4Ω 5W giữ treble_gain_raw <= 4600).\n` +
+    `Cấu hình gốc trước đó: ${JSON.stringify({
+      music_bass_db: STATE.music_bass_db, music_mid_db: STATE.music_mid_db, music_treble_db: STATE.music_treble_db,
+      bass_hpf_hz: STATE.bass_hpf_hz, bass_lpf_hz: STATE.bass_lpf_hz, bass_pregain_db: STATE.bass_pregain_db,
+      mid_hpf_hz: STATE.mid_hpf_hz, mid_gain_raw: STATE.mid_gain_raw,
+      treble_hpf_hz: STATE.treble_hpf_hz, treble_gain_raw: STATE.treble_gain_raw,
+      mvb_classic_en: STATE.mvb_classic_en, mvb_classic_int: STATE.mvb_classic_int,
+      exc_en: STATE.exc_en, exc_wet: STATE.exc_wet, ng_enable: STATE.ng_enable, drc_enabled: STATE.drc_enabled
+    })}\n` +
+    `Yêu cầu: ${promptText}\n` +
+    `Hãy trả về đúng 1 khối JSON {"reply":"...", "changes":{"music_bass_db":..., ...}} để tôi dán lại vào app.`;
+  if (navigator.clipboard) navigator.clipboard.writeText(fullPrompt);
+
+  tag.className = "pill neon-wait";
+  tag.textContent = "🟡 Neon: Đang mở Chrome & kiểm tra kết nối...";
+  appendAiMsg("bot", "🌐 Đang mở <b>Google Chrome → Gemini</b> và kiểm tra trạng thái kết nối bằng Neon...");
+  await api("/api/open_gemini_chrome", {});
+
+  let ok = false;
+  let lastStatus = null;
+  for (let i = 0; i < 6; i++) {
+    await new Promise(r => setTimeout(r, 900));
+    lastStatus = await api("/api/gemini_chrome_status");
+    if (lastStatus && lastStatus.ok) { ok = true; break; }
+  }
+
+  if (ok) {
+    tag.className = "pill neon-ok";
+    tag.textContent = "🟢 Neon Connected · Chrome Gemini OK";
+    appendAiMsg("bot", "🟢 <b>Neon xác nhận Chrome Gemini đã kết nối thành công!</b> Bắt đầu phân tích & phản hồi theo cấu hình gốc ngay:");
+    await sendAiPrompt(promptText);
+  } else {
+    tag.className = "pill warn";
+    tag.textContent = "🔴 Neon Offline";
+    appendAiMsg("bot", `🔴 Neon chưa thấy kết nối đầy đủ (${lastStatus ? lastStatus.message : "timeout"}). Hãy kiểm tra mạng hoặc cửa sổ Chrome rồi thử lại.`);
+  }
+}
+
+async function pasteGeminiJson() {
+  let raw = "";
+  try { raw = await navigator.clipboard.readText(); } catch (_) {}
+  if (!raw || !raw.includes("{")) raw = window.prompt("Dán đoạn JSON mà Gemini trình duyệt vừa trả về:") || "";
+  const match = raw.match(/\{[\s\S]*\}/);
+  if (!match) { alert("Không tìm thấy JSON hợp lệ."); return; }
+  try {
+    const parsed = JSON.parse(match[0]);
+    PENDING_AI_PATCH = parsed.changes || parsed;
+    appendAiMsg("bot", `📋 Đã nhận JSON từ Gemini trình duyệt: ${parsed.reply || "Sẵn sàng áp dụng."}`);
+    const btn = document.getElementById("btnApplyAi");
+    btn.disabled = false; btn.style.opacity = "1";
+  } catch (e) {
+    alert("JSON không hợp lệ: " + e.message);
+  }
+}
+
+(async function init() {
+  STATE = await api("/api/state");
+  AI_BASELINE = cloneState(STATE);
+  const savedKey = localStorage.getItem("gemini_api_key");
+  if (savedKey) document.getElementById("geminiApiKey").value = savedKey;
+  const pSel = document.getElementById("presetSelect");
+  (STATE.preset_names || []).forEach((n, i) => {
+    const o = document.createElement("option"); o.value = i; o.textContent = n; pSel.appendChild(o);
+  });
+  // Record 1 clean undo step before any slider drag or switch toggle
+  document.querySelectorAll('input[type="range"]').forEach(el => {
+    el.addEventListener("pointerdown", () => pushUndoSnapshot());
+  });
+  document.querySelectorAll('input.hidden-chk').forEach(el => {
+    el.addEventListener("pointerdown", () => pushUndoSnapshot());
+  });
+  populateUI();
+  updateUndoRedoButtons();
+  scanUsb();
+})();
+</script>
+</body>
+</html>
